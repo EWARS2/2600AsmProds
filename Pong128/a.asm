@@ -11,6 +11,7 @@
 	
 	SEG			; Start
 	org $F000 	; of cartridge
+
 ; Magic 8-byte solution that Inits Stack, mem & pointer
 ; Thx Random Terrain & Andrew Davie!
 Reset	ldx #0
@@ -45,6 +46,7 @@ Clear 	dex
 	sta HMP0
 	lda #%11110000
 	sta HMP1
+
 	
 	sta RESMP0
 	sta RESMP1
@@ -64,8 +66,8 @@ Clear 	dex
 ; into the kernel to allow for smaller code.
 StartOfFrame 
 	sta HMOVE
-	sta RESMP0
-	sta RESMP1
+	;sta RESMP0
+	;sta RESMP1
 
 
 
@@ -83,7 +85,8 @@ VBlank ; & start of VBlank
 ; Merging this section of code to save some bytes
 			ldx #229
 Picture		sta WSYNC
-			stx COLUBK
+			;stx COLUBK
+			
 			dex
 			bne Picture
 ; After this, X=0

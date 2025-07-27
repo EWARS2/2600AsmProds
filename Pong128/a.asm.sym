@@ -42,11 +42,11 @@ InterruptVectors         fffa
 INTIM                    0284                  
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
-Overscan                 f051              (R )
+Overscan                 f049              (R )
 PF0                      000d                  
 PF1                      000e                  
 PF2                      000f                  
-Picture                  f044              (R )
+Picture                  f03e              (R )
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -58,7 +58,7 @@ RESMP1                   0029              (R )
 RESP0                    0010                  
 RESP1                    0011                  
 RSYNC                    0003                  
-StartOfFrame             f02e              (R )
+StartOfFrame             f02c              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
 SWCHA                    0280                  
@@ -71,7 +71,7 @@ TIM1T                    0294
 TIM64T                   0296                  
 TIM8T                    0295                  
 TIMINT                   0285                  
-VBlank                   f034                  
+VBlank                   f02e                  
 VBLANK                   0001              (R )
 VDELBL                   0027                  
 VDELP0                   0025                  

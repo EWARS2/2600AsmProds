@@ -1,4 +1,4 @@
-------- FILE C:\Users\jefma\Desktop\2600asm\Pong128\a.asm LEVEL 1 PASS 1
+------- FILE C:\Users\EWARS_2\Documents\Projects\2600asm\Pong128\a.asm LEVEL 1 PASS 1
       1  0000 ????						; Title: Pong
       2  0000 ????						; Author: EWARS_2
       3  0000 ????						; Description: Pong with no extra needed hardware.
@@ -209,7 +209,7 @@
     200  0000 ????				      SEG
     201  0000 ????
     202  0000 ????						; EOF
-------- FILE C:\Users\jefma\Desktop\2600asm\Pong128\a.asm
+------- FILE C:\Users\EWARS_2\Documents\Projects\2600asm\Pong128\a.asm
 ------- FILE macro.h LEVEL 2 PASS 1
       0  0000 ????				      include	"macro.h"
       1  0000 ????						; Provided under the CC0 license. See the included LICENSE.txt for details.
@@ -360,112 +360,118 @@
     146  0000 ????				      ENDM
     147  0000 ????
     148  0000 ????						; EOF
-------- FILE C:\Users\jefma\Desktop\2600asm\Pong128\a.asm
+------- FILE C:\Users\EWARS_2\Documents\Projects\2600asm\Pong128\a.asm
       9  0000 ????
      10  0000 ????
      11  0000 ????
      12  0000 ????				      SEG		; Start
      13  f000					      org	$F000	; of cartridge
-     14  f000							; Magic 8-byte solution that Inits Stack, mem & pointer
-     15  f000							; Thx Random Terrain & Andrew Davie!
-     16  f000		       a2 00	   Reset      ldx	#0
-     17  f002		       8a		      txa
-     18  f003		       ca	   Clear      dex
-     19  f004		       9a		      txs
-     20  f005		       48		      pha
-     21  f006		       d0 fb		      bne	Clear
-     22  f008							; After this, A=X=0
-     23  f008
+     14  f000
+     15  f000							; Magic 8-byte solution that Inits Stack, mem & pointer
+     16  f000							; Thx Random Terrain & Andrew Davie!
+     17  f000		       a2 00	   Reset      ldx	#0
+     18  f002		       8a		      txa
+     19  f003		       ca	   Clear      dex
+     20  f004		       9a		      txs
+     21  f005		       48		      pha
+     22  f006		       d0 fb		      bne	Clear
+     23  f008							; After this, A=X=0
      24  f008
      25  f008
      26  f008
      27  f008
-     28  f008							; Innit
-     29  f008		       a9 5e		      lda	#$5E
-     30  f00a		       85 09		      sta	COLUBK
-     31  f00c		       a9 ff		      lda	#$FF
-     32  f00e		       85 08		      sta	COLUPF
-     33  f010		       85 06		      sta	COLUP0
-     34  f012		       85 07		      sta	COLUP1
-     35  f014
+     28  f008
+     29  f008							; Innit
+     30  f008		       a9 5e		      lda	#$5E
+     31  f00a		       85 09		      sta	COLUBK
+     32  f00c		       a9 ff		      lda	#$FF
+     33  f00e		       85 08		      sta	COLUPF
+     34  f010		       85 06		      sta	COLUP0
+     35  f012		       85 07		      sta	COLUP1
      36  f014
-     37  f014
-     38  f014		       a9 10		      lda	#%00010000
-     39  f016		       85 20		      sta	HMP0
-     40  f018		       a9 f0		      lda	#%11110000
-     41  f01a		       85 21		      sta	HMP1
-     42  f01c
-     43  f01c		       85 28		      sta	RESMP0
-     44  f01e		       85 29		      sta	RESMP1
-     45  f020		       85 2a		      sta	HMOVE
-     46  f022							;sta HMCLR
-     47  f022
-     48  f022
-     49  f022		       a9 ff		      lda	#$FF
-     50  f024		       85 1b		      sta	GRP0
-     51  f026		       85 1c		      sta	GRP1
-     52  f028		       85 1d		      sta	ENAM0
-     53  f02a		       85 1e		      sta	ENAM1
-     54  f02c		       85 1f		      sta	ENABL
-     55  f02e
-     56  f02e
-     57  f02e							; Might want to Innit Y here
-     58  f02e							; This is also where the copy2RAM code is gonna go
-     59  f02e
-     60  f02e
-     61  f02e							; This is where the actual code will be run.
-     62  f02e							; At least temporarily. Will try to splice this
-     63  f02e							; into the kernel to allow for smaller code.
-     64  f02e				   StartOfFrame
-     65  f02e		       85 2a		      sta	HMOVE
-     66  f030		       85 28		      sta	RESMP0
-     67  f032		       85 29		      sta	RESMP1
-     68  f034
-     69  f034
-     70  f034
-     71  f034				   VBlank		; & start of VBlank
-     72  f034		       86 01		      stx	VBLANK	; Store 0
-     73  f036		       a9 02		      lda	#2
-     74  f038		       85 00		      sta	VSYNC	; Store 2
-     75  f03a		       85 02		      sta	WSYNC	; 3 scanlines of VSync
-     76  f03c		       85 02		      sta	WSYNC
-     77  f03e		       85 02		      sta	WSYNC
-     78  f040		       86 00		      stx	VSYNC	; Store 0
-     79  f042
-     80  f042
-     81  f042							; 37 VBlank + 192 picture = 229 scanlines
-     82  f042							; Merging this section of code to save some bytes
-     83  f042		       a2 e5		      ldx	#229
-     84  f044		       85 02	   Picture    sta	WSYNC
-     85  f046		       86 09		      stx	COLUBK
-     86  f048		       ca		      dex
-     87  f049		       d0 f9		      bne	Picture
-     88  f04b							; After this, X=0
-     89  f04b
-     90  f04b
-     91  f04b
-     92  f04b							; It'd be great if the Overscan & End of VBlank code
-     93  f04b							; code be merged into the Picture loop in the name of
-     94  f04b							; saved bytes,
-     95  f04b							; but this would require the loop to go 259 times, which
-     96  f04b							; would actually probably increase code size.
-     97  f04b							; (If we used a 16-bit number for the loop.)
-     98  f04b							; Something to look into.
-     99  f04b
-    100  f04b
-    101  f04b							; End of VBlank
-    102  f04b		       a2 42		      ldx	#%01000010
-    103  f04d		       86 01		      stx	VBLANK	; Store #%01000010
-    104  f04f							; 30 lines of overscan
-    105  f04f		       a2 1d		      ldx	#29
-    106  f051		       85 02	   Overscan   sta	WSYNC
-    107  f053		       ca		      dex
-    108  f054		       d0 fb		      bne	Overscan
-    109  f056							; After this, X=0
-    110  f056		       4c 2e f0 	      jmp	StartOfFrame
-    111  fffa					      org	$FFFA
-    112  fffa				   InterruptVectors
-    113  fffa		       00 f0		      .word.w	Reset	; NMI
-    114  fffc		       00 f0		      .word.w	Reset	; RESET
-    115  fffe		       00 f0		      .word.w	Reset	; IRQ
-    116  fffe					      END
+     37  f014							;lda #$FF
+     38  f014		       85 1b		      sta	GRP0
+     39  f016		       85 1c		      sta	GRP1
+     40  f018		       85 1d		      sta	ENAM0
+     41  f01a		       85 1e		      sta	ENAM1
+     42  f01c		       85 1f		      sta	ENABL
+     43  f01e
+     44  f01e
+     45  f01e		       a9 10		      lda	#%00010000
+     46  f020		       85 20		      sta	HMP0
+     47  f022		       a9 f0		      lda	#%11110000
+     48  f024		       85 21		      sta	HMP1
+     49  f026
+     50  f026
+     51  f026		       85 28		      sta	RESMP0
+     52  f028		       85 29		      sta	RESMP1
+     53  f02a		       85 2a		      sta	HMOVE
+     54  f02c							;sta HMCLR
+     55  f02c
+     56  f02c
+     57  f02c
+     58  f02c
+     59  f02c
+     60  f02c							; Might want to Innit Y here
+     61  f02c							; This is also where the copy2RAM code is gonna go
+     62  f02c
+     63  f02c
+     64  f02c							; This is where the actual code will be run.
+     65  f02c							; At least temporarily. Will try to splice this
+     66  f02c							; into the kernel to allow for smaller code.
+     67  f02c				   StartOfFrame
+     68  f02c		       85 2a		      sta	HMOVE
+     69  f02e							;sta RESMP0
+     70  f02e							;sta RESMP1
+     71  f02e
+     72  f02e
+     73  f02e
+     74  f02e				   VBlank		; & start of VBlank
+     75  f02e		       86 01		      stx	VBLANK	; Store 0
+     76  f030		       a9 02		      lda	#2
+     77  f032		       85 00		      sta	VSYNC	; Store 2
+     78  f034		       85 02		      sta	WSYNC	; 3 scanlines of VSync
+     79  f036		       85 02		      sta	WSYNC
+     80  f038		       85 02		      sta	WSYNC
+     81  f03a		       86 00		      stx	VSYNC	; Store 0
+     82  f03c
+     83  f03c
+     84  f03c							; 37 VBlank + 192 picture = 229 scanlines
+     85  f03c							; Merging this section of code to save some bytes
+     86  f03c		       a2 e5		      ldx	#229
+     87  f03e		       85 02	   Picture    sta	WSYNC
+     88  f040							;stx COLUBK
+     89  f040
+     90  f040		       ca		      dex
+     91  f041		       d0 fb		      bne	Picture
+     92  f043							; After this, X=0
+     93  f043
+     94  f043
+     95  f043
+     96  f043							; It'd be great if the Overscan & End of VBlank code
+     97  f043							; code be merged into the Picture loop in the name of
+     98  f043							; saved bytes,
+     99  f043							; but this would require the loop to go 259 times, which
+    100  f043							; would actually probably increase code size.
+    101  f043							; (If we used a 16-bit number for the loop.)
+    102  f043							; Something to look into.
+    103  f043
+    104  f043
+    105  f043							; End of VBlank
+    106  f043		       a2 42		      ldx	#%01000010
+    107  f045		       86 01		      stx	VBLANK	; Store #%01000010
+    108  f047							; 30 lines of overscan
+    109  f047		       a2 1d		      ldx	#29
+    110  f049		       85 02	   Overscan   sta	WSYNC
+    111  f04b		       ca		      dex
+    112  f04c		       d0 fb		      bne	Overscan
+    113  f04e							; After this, X=0
+    114  f04e		       4c 2c f0 	      jmp	StartOfFrame
+    115  f051
+    116  f051
+    117  fffa					      org	$FFFA
+    118  fffa				   InterruptVectors
+    119  fffa		       00 f0		      .word.w	Reset	; NMI
+    120  fffc		       00 f0		      .word.w	Reset	; RESET
+    121  fffe		       00 f0		      .word.w	Reset	; IRQ
+    122  fffe					      END
