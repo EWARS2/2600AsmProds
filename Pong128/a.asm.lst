@@ -382,148 +382,149 @@
      27  f008
      28  f008
      29  f008							; Innit
-     30  f008		       a9 5e		      lda	#$5E
-     31  f00a		       85 09		      sta	COLUBK
-     32  f00c		       a9 ff		      lda	#$FF
-     33  f00e		       85 08		      sta	COLUPF
-     34  f010		       85 06		      sta	COLUP0
-     35  f012		       85 07		      sta	COLUP1
-     36  f014
-     37  f014							;lda #$FF
-     38  f014		       85 1b		      sta	GRP0
-     39  f016		       85 1c		      sta	GRP1
-     40  f018		       85 1d		      sta	ENAM0
-     41  f01a		       85 1e		      sta	ENAM1
-     42  f01c		       85 1f		      sta	ENABL
-     43  f01e
-     44  f01e
-     45  f01e		       a9 10		      lda	#%00010000
-     46  f020		       85 20		      sta	HMP0
-     47  f022		       a9 f0		      lda	#%11110000
-     48  f024		       85 21		      sta	HMP1
-     49  f026
-     50  f026
-     51  f026		       85 28		      sta	RESMP0
-     52  f028		       85 29		      sta	RESMP1
-     53  f02a		       85 2a		      sta	HMOVE
-     54  f02c							;sta HMCLR
-     55  f02c
-     56  f02c
-     57  f02c
-     58  f02c
-     59  f02c
-     60  f02c							; Y still hasn't been init yet
-     61  f02c							; This is also where the copy2RAM code is gonna go
-     62  f02c							; when the core game is finished
-     63  f02c
-     64  f02c
-     65  f02c							; This is where the actual code will be run.
-     66  f02c							; At least temporarily. Will try to splice this
-     67  f02c							; into the kernel to allow for smaller code.
-     68  f02c				   StartOfFrame
-     69  f02c		       85 2a		      sta	HMOVE
-     70  f02e							;sta RESMP0
-     71  f02e							;sta RESMP1
-     72  f02e
-     73  f02e
-     74  f02e
-     75  f02e				   VBlank		; & start of VBlank
-     76  f02e		       86 01		      stx	VBLANK	; Store 0
-     77  f030		       a9 02		      lda	#2
-     78  f032		       85 00		      sta	VSYNC	; Store 2
-     79  f034		       85 02		      sta	WSYNC	; 3 scanlines of VSync
-     80  f036		       85 02		      sta	WSYNC
-     81  f038		       85 02		      sta	WSYNC
-     82  f03a		       86 00		      stx	VSYNC	; Store 0
-     83  f03c
-     84  f03c
-     85  f03c							; 37 VBlank + 192 picture = 229 scanlines
-     86  f03c							; Merging this section of code to save some bytes
-     87  f03c		       a2 e5		      ldx	#229
-     88  f03e		       85 02	   Picture    sta	WSYNC
-     89  f040							;stx COLUBK
-     90  f040
-     91  f040		       ca		      dex
-     92  f041		       d0 fb		      bne	Picture
-     93  f043							; After this, X=0
-     94  f043
-     95  f043
-     96  f043
-     97  f043							; It'd be great if the Overscan & End of VBlank code
-     98  f043							; code be merged into the Picture loop in the name of
-     99  f043							; saved bytes,
-    100  f043							; but this would require the loop to go 259 times, which
-    101  f043							; would actually probably increase code size.
-    102  f043							; (If we used a 16-bit number for the loop.)
-    103  f043							; Something to look into.
-    104  f043
-    105  f043
-    106  f043							; End of VBlank
-    107  f043		       a2 42		      ldx	#%01000010
-    108  f045		       86 01		      stx	VBLANK	; Store #%01000010
-    109  f047							; 30 lines of overscan
-    110  f047		       a2 1d		      ldx	#29
-    111  f049		       85 02	   Overscan   sta	WSYNC
-    112  f04b		       ca		      dex
-    113  f04c		       d0 fb		      bne	Overscan
-    114  f04e							; After this, X=0
-    115  f04e		       4c 2c f0 	      jmp	StartOfFrame
-    116  f051
-    117  f051
-    118  f051
-    119  f051							; Positions an object horizontally
-    120  f051							; Inputs: A = Desired position.
-    121  f051							; X = Desired object to be positioned (0-5).
-    122  f051							; scanlines: If control comes on or before cycle 73 then 1 scanline is consumed.
-    123  f051							; If control comes after cycle 73 then 2 scanlines are consumed.
-    124  f051							; Outputs: X = unchanged
-    125  f051							; A = Fine Adjustment value.
-    126  f051							; Y = the "remainder" of the division by 15 minus an additional 15.
-    127  f051							; control is returned on cycle 6 of the next scanline.
-    128  f051				   PosObject  SUBROUTINE
-    129  f051		       85 02		      sta	WSYNC	; 00	  Sync to start of scanline.
-    130  f053		       38		      sec		; 02	  Set the carry flag so no borrow will be
-    131  f054							;	  applied during the division.
-    132  f054		       e9 0f	   .divideby15 sbc	#15	; 04	  Waste the necessary amount of time
-    133  f056							;	  dividing X-pos by 15!
-    134  f056		       b0 fc		      bcs	.divideby15	; 06/07  11/16/21/26/31/36/41/46/51/56/61/66
-    135  f058		       a8		      tay
-    136  f059		       b9 0f fe 	      lda	fineAdjustTable,y	; 13 -> Consume 5 cycles by guaranteeing we
-    137  f05c							;	 cross a page boundary
-    138  f05c		       95 20		      sta	HMP0,x
-    139  f05e		       95 10		      sta	RESP0,x	; 21/ 26/31/36/41/46/51/56/61/66/71
-    140  f060							; Set the rough position.
-    141  f060		       60		      rts
-    142  f061							;-----------------------------
-    143  f061							; This table converts the "remainder" of the division by 15 (-1 to -15) to the correct
-    144  f061							; fine adjustment value. This table is on a page boundary to guarantee the processor
-    145  f061							; will cross a page boundary and waste a cycle in order to be at the precise position
-    146  f061							; for a RESP0,x write
-    147  ff00					      ORG	$FF00
-    148  ff00				   fineAdjustBegin
-    149  ff00		       70		      DC.B	%01110000	; Left 7 
-    150  ff01		       60		      DC.B	%01100000	; Left 6
-    151  ff02		       50		      DC.B	%01010000	; Left 5
-    152  ff03		       40		      DC.B	%01000000	; Left 4
-    153  ff04		       30		      DC.B	%00110000	; Left 3
-    154  ff05		       20		      DC.B	%00100000	; Left 2
-    155  ff06		       10		      DC.B	%00010000	; Left 1
-    156  ff07		       00		      DC.B	%00000000	; No movement.
-    157  ff08		       f0		      DC.B	%11110000	; Right 1
-    158  ff09		       e0		      DC.B	%11100000	; Right 2
-    159  ff0a		       d0		      DC.B	%11010000	; Right 3
-    160  ff0b		       c0		      DC.B	%11000000	; Right 4
-    161  ff0c		       b0		      DC.B	%10110000	; Right 5
-    162  ff0d		       a0		      DC.B	%10100000	; Right 6
-    163  ff0e		       90		      DC.B	%10010000	; Right 7
-    164  ff0e		       fe 0f	   fineAdjustTable EQU	fineAdjustBegin - %11110001	; NOTE: %11110001 = -15
-    165  ff0f
+     30  f008							;lda #$5E
+     31  f008							;sta COLUBK
+     32  f008		       a9 ff		      lda	#$FF
+     33  f00a		       85 08		      sta	COLUPF
+     34  f00c		       85 06		      sta	COLUP0
+     35  f00e		       85 07		      sta	COLUP1
+     36  f010
+     37  f010							;lda #$FF
+     38  f010		       85 1b		      sta	GRP0
+     39  f012		       85 1c		      sta	GRP1
+     40  f014		       85 1d		      sta	ENAM0
+     41  f016		       85 1e		      sta	ENAM1
+     42  f018		       85 1f		      sta	ENABL
+     43  f01a
+     44  f01a
+     45  f01a		       a9 10		      lda	#%00010000
+     46  f01c		       85 20		      sta	HMP0
+     47  f01e		       a9 f0		      lda	#%11110000
+     48  f020		       85 21		      sta	HMP1
+     49  f022
+     50  f022
+     51  f022		       85 28		      sta	RESMP0	; Reset Missile to Player
+     52  f024		       85 29		      sta	RESMP1
+     53  f026		       85 2a		      sta	HMOVE
+     54  f028							;sta HMCLR
+     55  f028
+     56  f028
+     57  f028
+     58  f028
+     59  f028
+     60  f028							; Y still hasn't been init yet
+     61  f028
+     62  f028							; This is also where the copy2RAM code is gonna go
+     63  f028							; when the core game is finished
+     64  f028
+     65  f028
+     66  f028							; This is where the actual code will be run.
+     67  f028							; At least temporarily. Will try to splice this
+     68  f028							; into the kernel to allow for smaller code.
+     69  f028				   StartOfFrame
+     70  f028		       85 2a		      sta	HMOVE
+     71  f02a							;sta RESMP0
+     72  f02a							;sta RESMP1
+     73  f02a
+     74  f02a
+     75  f02a
+     76  f02a				   VBlank		; & start of VBlank
+     77  f02a		       86 01		      stx	VBLANK	; Store 0
+     78  f02c		       a9 02		      lda	#2
+     79  f02e		       85 00		      sta	VSYNC	; Store 2
+     80  f030		       85 02		      sta	WSYNC	; 3 scanlines of VSync
+     81  f032		       85 02		      sta	WSYNC
+     82  f034		       85 02		      sta	WSYNC
+     83  f036		       86 00		      stx	VSYNC	; Store 0
+     84  f038
+     85  f038
+     86  f038							; 37 VBlank + 192 picture = 229 scanlines
+     87  f038							; Merging this section of code to save some bytes
+     88  f038		       a2 e5		      ldx	#229
+     89  f03a		       85 02	   Picture    sta	WSYNC
+     90  f03c							;stx COLUBK
+     91  f03c
+     92  f03c		       ca		      dex
+     93  f03d		       d0 fb		      bne	Picture
+     94  f03f							; After this, X=0
+     95  f03f
+     96  f03f
+     97  f03f
+     98  f03f							; It'd be great if the Overscan & End of VBlank code
+     99  f03f							; code be merged into the Picture loop in the name of
+    100  f03f							; saved bytes,
+    101  f03f							; but this would require the loop to go 259 times, which
+    102  f03f							; would actually probably increase code size.
+    103  f03f							; (If we used a 16-bit number for the loop.)
+    104  f03f							; Something to look into.
+    105  f03f
+    106  f03f
+    107  f03f							; End of VBlank
+    108  f03f		       a2 42		      ldx	#%01000010
+    109  f041		       86 01		      stx	VBLANK	; Store #%01000010
+    110  f043							; 30 lines of overscan
+    111  f043		       a2 1d		      ldx	#29
+    112  f045		       85 02	   Overscan   sta	WSYNC
+    113  f047		       ca		      dex
+    114  f048		       d0 fb		      bne	Overscan
+    115  f04a							; After this, X=0
+    116  f04a		       4c 28 f0 	      jmp	StartOfFrame
+    117  f04d
+    118  f04d
+    119  f04d
+    120  f04d							; Positions an object horizontally
+    121  f04d							; Inputs: A = Desired position.
+    122  f04d							; X = Desired object to be positioned (0-5).
+    123  f04d							; scanlines: If control comes on or before cycle 73 then 1 scanline is consumed.
+    124  f04d							; If control comes after cycle 73 then 2 scanlines are consumed.
+    125  f04d							; Outputs: X = unchanged
+    126  f04d							; A = Fine Adjustment value.
+    127  f04d							; Y = the "remainder" of the division by 15 minus an additional 15.
+    128  f04d							; control is returned on cycle 6 of the next scanline.
+    129  f04d				   PosObject  SUBROUTINE
+    130  f04d		       85 02		      sta	WSYNC	; 00	  Sync to start of scanline.
+    131  f04f		       38		      sec		; 02	  Set the carry flag so no borrow will be
+    132  f050							;	  applied during the division.
+    133  f050		       e9 0f	   .divideby15 sbc	#15	; 04	  Waste the necessary amount of time
+    134  f052							;	  dividing X-pos by 15!
+    135  f052		       b0 fc		      bcs	.divideby15	; 06/07  11/16/21/26/31/36/41/46/51/56/61/66
+    136  f054		       a8		      tay
+    137  f055		       b9 0f fe 	      lda	fineAdjustTable,y	; 13 -> Consume 5 cycles by guaranteeing we
+    138  f058							;	 cross a page boundary
+    139  f058		       95 20		      sta	HMP0,x
+    140  f05a		       95 10		      sta	RESP0,x	; 21/ 26/31/36/41/46/51/56/61/66/71
+    141  f05c							; Set the rough position.
+    142  f05c		       60		      rts
+    143  f05d							;-----------------------------
+    144  f05d							; This table converts the "remainder" of the division by 15 (-1 to -15) to the correct
+    145  f05d							; fine adjustment value. This table is on a page boundary to guarantee the processor
+    146  f05d							; will cross a page boundary and waste a cycle in order to be at the precise position
+    147  f05d							; for a RESP0,x write
+    148  ff00					      ORG	$FF00	;$Fx00 $F000
+    149  ff00				   fineAdjustBegin
+    150  ff00		       70		      DC.B	%01110000	; Left 7 
+    151  ff01		       60		      DC.B	%01100000	; Left 6
+    152  ff02		       50		      DC.B	%01010000	; Left 5
+    153  ff03		       40		      DC.B	%01000000	; Left 4
+    154  ff04		       30		      DC.B	%00110000	; Left 3
+    155  ff05		       20		      DC.B	%00100000	; Left 2
+    156  ff06		       10		      DC.B	%00010000	; Left 1
+    157  ff07		       00		      DC.B	%00000000	; No movement.
+    158  ff08		       f0		      DC.B	%11110000	; Right 1
+    159  ff09		       e0		      DC.B	%11100000	; Right 2
+    160  ff0a		       d0		      DC.B	%11010000	; Right 3
+    161  ff0b		       c0		      DC.B	%11000000	; Right 4
+    162  ff0c		       b0		      DC.B	%10110000	; Right 5
+    163  ff0d		       a0		      DC.B	%10100000	; Right 6
+    164  ff0e		       90		      DC.B	%10010000	; Right 7
+    165  ff0e		       fe 0f	   fineAdjustTable EQU	fineAdjustBegin - %11110001	; NOTE: %11110001 = -15
     166  ff0f
     167  ff0f
     168  ff0f
-    169  fffa					      org	$FFFA
-    170  fffa				   InterruptVectors
-    171  fffa		       00 f0		      .word.w	Reset	; NMI
-    172  fffc		       00 f0		      .word.w	Reset	; RESET
-    173  fffe		       00 f0		      .word.w	Reset	; IRQ
-    174  fffe					      END
+    169  ff0f
+    170  fffa					      org	$FFFA
+    171  fffa				   InterruptVectors
+    172  fffa		       00 f0		      .word.w	Reset	; NMI
+    173  fffc		       00 f0		      .word.w	Reset	; RESET
+    174  fffe		       00 f0		      .word.w	Reset	; IRQ
+    175  fffe					      END

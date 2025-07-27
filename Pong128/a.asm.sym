@@ -1,5 +1,5 @@
 --- Symbol List (sorted by symbol)
-1.divideby15             f054              (R )
+1.divideby15             f050              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
 AUDF0                    0017                  
@@ -7,7 +7,7 @@ AUDF1                    0018
 AUDV0                    0019                  
 AUDV1                    001a                  
 Clear                    f003              (R )
-COLUBK                   0009              (R )
+COLUBK                   0009                  
 COLUP0                   0006              (R )
 COLUP1                   0007              (R )
 COLUPF                   0008              (R )
@@ -45,12 +45,12 @@ InterruptVectors         fffa
 INTIM                    0284                  
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
-Overscan                 f049              (R )
+Overscan                 f045              (R )
 PF0                      000d                  
 PF1                      000e                  
 PF2                      000f                  
-Picture                  f03e              (R )
-PosObject                f051                  
+Picture                  f03a              (R )
+PosObject                f04d                  
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -62,7 +62,7 @@ RESMP1                   0029              (R )
 RESP0                    0010              (R )
 RESP1                    0011                  
 RSYNC                    0003                  
-StartOfFrame             f02c              (R )
+StartOfFrame             f028              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
 SWCHA                    0280                  
@@ -76,7 +76,7 @@ TIM64T                   0296
 TIM8T                    0295                  
 TIMINT                   0285                  
 VBLANK                   0001              (R )
-VBlank                   f02e                  
+VBlank                   f02a                  
 VDELBL                   0027                  
 VDELP0                   0025                  
 VDELP1                   0026                  

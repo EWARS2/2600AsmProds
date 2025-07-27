@@ -27,8 +27,8 @@ Clear 	dex
 
 
 ; Innit
-	lda #$5E
-	sta COLUBK
+	;lda #$5E
+	;sta COLUBK
 	lda #$FF
 	sta COLUPF
 	sta COLUP0
@@ -48,7 +48,7 @@ Clear 	dex
 	sta HMP1
 
 	
-	sta RESMP0
+	sta RESMP0 ; Reset Missile to Player
 	sta RESMP1
 	sta HMOVE
 	;sta HMCLR
@@ -58,6 +58,7 @@ Clear 	dex
 	
 	
 ; Y still hasn't been init yet
+
 ; This is also where the copy2RAM code is gonna go
 ; when the core game is finished
 
