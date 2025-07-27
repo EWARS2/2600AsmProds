@@ -144,7 +144,7 @@ PosObject   SUBROUTINE
 ; fine adjustment value. This table is on a page boundary to guarantee the processor
 ; will cross a page boundary and waste a cycle in order to be at the precise position
 ; for a RESP0,x write
-            ORG $FF00
+            ORG $FF00 ;$Fx00 $F000
 fineAdjustBegin
             DC.B %01110000; Left 7 
             DC.B %01100000; Left 6
