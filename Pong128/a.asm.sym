@@ -1,4 +1,5 @@
 --- Symbol List (sorted by symbol)
+1.divideby15             f054              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
 AUDF0                    0017                  
@@ -23,6 +24,8 @@ CXPPMM                   0007
 ENABL                    001f              (R )
 ENAM0                    001d              (R )
 ENAM1                    001e              (R )
+fineAdjustBegin          ff00              (R )
+fineAdjustTable          fe0f                  
 GRP0                     001b              (R )
 GRP1                     001c              (R )
 HMBL                     0024                  
@@ -47,6 +50,7 @@ PF0                      000d
 PF1                      000e                  
 PF2                      000f                  
 Picture                  f03e              (R )
+PosObject                f051                  
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -55,7 +59,7 @@ RESM0                    0012
 RESM1                    0013                  
 RESMP0                   0028              (R )
 RESMP1                   0029              (R )
-RESP0                    0010                  
+RESP0                    0010              (R )
 RESP1                    0011                  
 RSYNC                    0003                  
 StartOfFrame             f02c              (R )
@@ -71,8 +75,8 @@ TIM1T                    0294
 TIM64T                   0296                  
 TIM8T                    0295                  
 TIMINT                   0285                  
-VBlank                   f02e                  
 VBLANK                   0001              (R )
+VBlank                   f02e                  
 VDELBL                   0027                  
 VDELP0                   0025                  
 VDELP1                   0026                  
