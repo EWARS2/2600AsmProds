@@ -33,6 +33,12 @@ Clear 	dex
 	sta COLUP0
 	sta COLUP1
 	
+	;lda #$FF
+	sta GRP0
+	sta GRP1
+	sta ENAM0
+	sta ENAM1
+	sta ENABL
 	
 	
 	lda #%00010000
@@ -46,12 +52,7 @@ Clear 	dex
 	;sta HMCLR
 	
 	
-	lda #$FF
-	sta GRP0
-	sta GRP1
-	sta ENAM0
-	sta ENAM1
-	sta ENABL
+	
 	
 	
 ; Might want to Innit Y here
